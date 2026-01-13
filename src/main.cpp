@@ -1,3 +1,5 @@
+// MIT License
+// Copyright (c) 2026 İbrahim Aslan
 #include <SFML/Graphics.hpp>
 #include <cmath>
 #include <optional>
@@ -43,7 +45,6 @@ int main()
 
     //trail position array
     std::vector<sf::Vector2f> trail;
-
 
     while (window.isOpen())
     {   
@@ -91,7 +92,6 @@ int main()
             velocityVector.x = -velocityVector.x * elasticity;
         }
 
-
         //draw trail
         trail.push_back(circle.getPosition());
 
@@ -104,8 +104,10 @@ int main()
             window.draw(trailPoint);
         }
 
-
         //imgui objects
+        ImGui::SetNextWindowPos(ImVec2(100, 100), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(300, 200), ImGuiCond_Always);
+
         ImGui::Begin("Settings");
         ImGui::SliderFloat("Angle", &angleInDegrees, 0.0f, 90.0f);
         ImGui::SliderFloat("Velocity", &velocity, 0.0f, 1200.0f);
@@ -125,5 +127,4 @@ int main()
         ImGui::SFML::Render(window);
         window.display();
     }
-
 }
