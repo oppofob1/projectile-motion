@@ -17,7 +17,8 @@ int main()
     sf::Clock clock;
     sf::Clock deltaClock;
 
-    //starting angle and velocity
+    //starting angle, velocity and elasticity
+    float elasticity = 0.8f;
     float angleInDegrees = 45.0f;
     float velocity = 1000.f;
     
@@ -34,6 +35,14 @@ int main()
     sf::CircleShape circle(20.0f);
     circle.setFillColor(sf::Color::Red);
     circle.setPosition({240.0f, 720.0f});
+    circle.setOrigin({15.0f, 15.0f});
+
+    //set trail
+    sf::CircleShape trailPoint(5.0f);
+    trailPoint.setFillColor(sf::Color(50, 50, 50));
+
+    //trail position array
+    std::vector<sf::Vector2f> trail;
 
 
     while (window.isOpen())
@@ -67,24 +76,58 @@ int main()
         } 
         */
 
-        //update physics
+        //update physics 
         velocityVector += GRAVITY * dt;
         circle.move(velocityVector * dt);
+
+        if (circle.getPosition().y >= 1055.0f)
+        {
+            circle.setPosition({circle.getPosition().x, 1055.0f}); // exact floor
+            velocityVector.y = -velocityVector.y * elasticity;
+
+            // stop tiny bounces
+            if (std::abs(velocityVector.y) < 1.f) velocityVector.y = 0.f;
+        }
+
+        // wall collisions
+        if (circle.getPosition().x >= 1895.0f)
+        {
+            circle.setPosition({1895.0f, circle.getPosition().y});
+            velocityVector.x = -velocityVector.x * elasticity;
+        }
+        if (circle.getPosition().x <= 15.0f)
+        {
+            circle.setPosition({15.0f, circle.getPosition().y});
+            velocityVector.x = -velocityVector.x * elasticity;
+        }
+
+
+        //draw trail
+        trail.push_back(circle.getPosition());
 
         //sfml render
         window.clear(sf::Color(200, 200, 200));
         window.draw(circle);
+        for (size_t i = 0; i < trail.size(); ++i)
+        {
+            trailPoint.setPosition(trail[i]);
+            window.draw(trailPoint);
+        }
+
 
         //imgui objects
         ImGui::Begin("Settings");
         ImGui::SliderFloat("Angle", &angleInDegrees, 0.0f, 90.0f);
         ImGui::SliderFloat("Velocity", &velocity, 0.0f, 1200.0f);
+        ImGui::SliderFloat("Elasticity", &elasticity, 0.0f, 1.0f);
+
         //projectile throw button
         if (ImGui::Button("Throw"))
         {
             circle.setPosition({240.0f, 720.0f});
             velocityVector.x = velocity * std::cos(angle.asRadians());
             velocityVector.y = velocity * std::sin(angle.asRadians());
+            trail.erase(trail.begin(), trail.end());
         }
         ImGui::End();
 
