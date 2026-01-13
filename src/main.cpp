@@ -56,14 +56,16 @@ int main()
         //recalculate angle
         angle = sf::degrees(-angleInDegrees);
 
-        //reset animation if projectile hits the limit
+        /* 
+        reset animation if projectile hits the limit
         if (circle.getPosition().y >= 1100.0f)
         {
             circle.setPosition({240.0f, 720.0f});
             velocityVector.x = velocity * std::cos(angle.asRadians());
             velocityVector.y = velocity * std::sin(angle.asRadians());
             sf::sleep(sf::milliseconds(100));
-        }
+        } 
+        */
 
         //update physics
         velocityVector += GRAVITY * dt;
@@ -77,6 +79,13 @@ int main()
         ImGui::Begin("Settings");
         ImGui::SliderFloat("Angle", &angleInDegrees, 0.0f, 90.0f);
         ImGui::SliderFloat("Velocity", &velocity, 0.0f, 1200.0f);
+        //projectile throw button
+        if (ImGui::Button("Throw"))
+        {
+            circle.setPosition({240.0f, 720.0f});
+            velocityVector.x = velocity * std::cos(angle.asRadians());
+            velocityVector.y = velocity * std::sin(angle.asRadians());
+        }
         ImGui::End();
 
         //display and render imgui, display sfml windows
