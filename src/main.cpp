@@ -6,7 +6,7 @@
 
 int main()
 {   
-    //setup windows
+    //setup the window
     auto window = sf::RenderWindow(sf::VideoMode({1920u, 1080u}), "CMake SFML Project");
     window.setFramerateLimit(144);
 
@@ -65,31 +65,21 @@ int main()
         //recalculate angle
         angle = sf::degrees(-angleInDegrees);
 
-        /* 
-        reset animation if projectile hits the limit
-        if (circle.getPosition().y >= 1100.0f)
-        {
-            circle.setPosition({240.0f, 720.0f});
-            velocityVector.x = velocity * std::cos(angle.asRadians());
-            velocityVector.y = velocity * std::sin(angle.asRadians());
-            sf::sleep(sf::milliseconds(100));
-        } 
-        */
-
         //update physics 
         velocityVector += GRAVITY * dt;
         circle.move(velocityVector * dt);
 
+        //floor collision
         if (circle.getPosition().y >= 1055.0f)
         {
-            circle.setPosition({circle.getPosition().x, 1055.0f}); // exact floor
+            circle.setPosition({circle.getPosition().x, 1055.0f});
             velocityVector.y = -velocityVector.y * elasticity;
 
-            // stop tiny bounces
+            //stop very small velocities
             if (std::abs(velocityVector.y) < 1.f) velocityVector.y = 0.f;
         }
 
-        // wall collisions
+        //wall collisions
         if (circle.getPosition().x >= 1895.0f)
         {
             circle.setPosition({1895.0f, circle.getPosition().y});
